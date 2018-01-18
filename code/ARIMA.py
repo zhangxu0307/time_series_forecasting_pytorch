@@ -1,45 +1,55 @@
-
-from pandas import read_csv
-import util
-import eval
+from code.util import *
+from code import eval
 from pandas import datetime
-from matplotlib import pyplot
-from statsmodels.tsa.arima_model import ARIMA
-from sklearn.metrics import mean_squared_error
+from statsmodels.tsa.arima_model import ARIMA, ARMA
+import statsmodels.tsa.stattools as st
 from pandas.tools.plotting import autocorrelation_plot
 import numpy as np
 
-#ts,dataset = util.load_data(filename,indexName="dteday", columnName="registered")
-ts, dataset = util.load_data_xls("./data/NN5/NN5.xlsx", indexName="date", columnName="NN5-003")
 
-# autocorrelation_plot(ts)
-# pyplot.show()
+if __name__ == '__main__':
 
-X = ts.values
-X = np.array(X,dtype="float64")
-size = int(len(X) * 0.9)
-train, test = X[0:size], X[size:len(X)]
-history = [x for x in train]
-predictions = []
-for t in range(len(test)):
-    model = ARIMA(history, order=(4,1,3))
-    model_fit = model.fit(disp=0)
-    output = model_fit.forecast()
-    yhat = output[0]
-    predictions.append(yhat)
-    obs = test[t]
-    history.append(obs)
-    print('predicted=%f, expected=%f' % (yhat, obs))
-#RMSE = np.sqrt(mean_squared_error(test, predictions))
-test = np.array(test)
-predictions = np.array(predictions).reshape(-1)
-MAE = eval.calcMAE(test,predictions)
-RMSE = eval.calcRMSE(test,predictions)
-MAPE = eval.calcMAPE(test,predictions)
-print ('Test MAE: %.8f' % MAE)
-print ('Test RMSE: %.8f' % RMSE)
-print ('Test MAPE: %.8f' % MAPE)
-# plot
-pyplot.plot(test)
-pyplot.plot(predictions, color='red')
-pyplot.show()
+
+    ts, data = load_data("../data/NSW2013.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
+    # ts, data = load_data("../data/bike_hour.csv", indexName="dteday", columnName="cnt")
+    #ts, data = load_data("../data/traffic_data_in_bits.csv", indexName="datetime", columnName="value")
+    #ts, data = load_data("../data/TAS2016.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
+    # ts, data = util.load_data("../data/AEMO/TT30GEN.csv", indexName="TRADING_INTERVAL", columnName="VALUE")
+
+    dataset = ts.values
+    X = np.array(dataset,dtype="float64")
+    # size = int(len(X) * 0.9)
+    # train, test = X[0:size], X[size:len(X)]
+    train, test = divideTrainTest(dataset)
+    history = [x for x in train]
+    predictions = []
+
+    for t in range(len(test)):
+
+        # order = st.arma_order_select_ic(history, max_ar=5, max_ma=5, ic=['aic', 'bic', 'hqic'])
+        # print(order.bic_min_order)
+
+        model = ARMA(history, order=(4, 4))
+        model_fit = model.fit(disp=0)
+        output = model_fit.forecast()
+        yhat = output[0]
+
+        predictions.append(yhat)
+        obs = test[t]
+        history.append(obs)
+        print('predicted=%f, expected=%f' % (yhat, obs))
+
+    test = np.array(test)
+    predictions = np.array(predictions).reshape(-1)
+    MAE = eval.calcMAE(test,predictions)
+    RMSE = eval.calcRMSE(test,predictions)
+    MAPE = eval.calcSMAPE(test,predictions)
+    print ('Test MAE: %.8f' % MAE)
+    print ('Test RMSE: %.8f' % RMSE)
+    print ('Test MAPE: %.8f' % MAPE)
+
+
+    # plot
+    # pyplot.plot(test)
+    # pyplot.plot(predictions, color='red')
+    # pyplot.show()
