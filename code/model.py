@@ -8,6 +8,7 @@ from torch.autograd import Variable
 
 torch.manual_seed(1)
 
+# 模型基类，主要是用于指定参数和cell类型
 class BaseModel(nn.Module):
 
     def __init__(self, inputDim, hiddenNum, outputDim, layerNum, cell):
@@ -33,7 +34,7 @@ class BaseModel(nn.Module):
         self.fc = nn.Linear(self.hiddenNum, self.outputDim)
 
 
-
+# 标准RNN模型
 class  RNNModel(BaseModel):
 
     def __init__(self, inputDim, hiddenNum, outputDim, layerNum, cell):
@@ -54,6 +55,7 @@ class  RNNModel(BaseModel):
         return fcOutput
 
 
+# LSTM模型
 class LSTMModel(BaseModel):
 
     def __init__(self, inputDim, hiddenNum, outputDim, layerNum, cell):
@@ -70,6 +72,7 @@ class LSTMModel(BaseModel):
 
         return fcOutput
 
+# GRU模型
 class GRUModel(BaseModel):
 
     def __init__(self, inputDim, hiddenNum, outputDim, layerNum, cell):
@@ -84,6 +87,7 @@ class GRUModel(BaseModel):
 
         return fcOutput
 
+# ResRNN模型
 class ResRNNModel(nn.Module):
 
     def __init__(self, inputDim, hiddenNum, outputDim, resDepth):
@@ -141,7 +145,7 @@ class ResRNNModel(nn.Module):
 
         return fcOutput
 
-
+# 加入注意机制的RNN模型
 class AttentionRNNModel(nn.Module):
 
     def __init__(self, inputDim, hiddenNum, outputDim, seqLen):
@@ -169,11 +173,10 @@ class AttentionRNNModel(nn.Module):
 
         fcOutput = self.fc(flanten)
 
-
         return fcOutput
 
 
-
+# 标准ANN模型
 class ANNModel(nn.Module):
 
     def __init__(self, inputDim, hiddenNum, outputDim):
@@ -192,6 +195,7 @@ class ANNModel(nn.Module):
 
         return output
 
+# 分解网络
 class DecompositionNetModel(nn.Module):
 
     def __init__(self, inputDim, fchiddenNum, rnnhiddenNum, outputDim):

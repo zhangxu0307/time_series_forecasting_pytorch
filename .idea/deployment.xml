@@ -12,7 +12,7 @@
       <paths name="rinc_gpu1">
         <serverdata>
           <mappings>
-            <mapping deploy="/python_project/time_series_pytorch/" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/time_series_pytorch/" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

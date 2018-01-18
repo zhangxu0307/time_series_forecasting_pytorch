@@ -1,20 +1,37 @@
-from code.train import train, predict
-from code.util import load_data, load_data_txt, load_data_xls, createSamples, divideTrainTest, align
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.svm import SVR
 from code import eval
-from code.season_decompose import seasonDecompose
-import pandas as pd
+from code.util import *
+from code.season_decompose import *
+from sklearn.preprocessing import MinMaxScaler
 
-def test(data, lookBack, epoch, lr, batchSize, method, modelPath):
 
-    # 归一化数据
+def trainSVM(trainX, trainY):
+
+    n = trainX.shape[0]
+    print("trainx num is:", n)
+    svrModel = SVR(C=0.1, epsilon=0.01, kernel="rbf")
+    svrModel.fit(trainX, trainY)
+
+    return svrModel
+
+def predictSVM(testX, svrModel):
+
+    n = testX.shape[0]
+    print("testx num is:", n)
+    testy = svrModel.predict(testX)
+
+    return testy
+
+
+def testSVM(data, lookBack):
+
     scaler = MinMaxScaler(feature_range=(0, 1))
     dataset = scaler.fit_transform(data)
 
-    # 分割序列为样本, 支持RNN或者普通样本形式
+    # 分割序列为样本
     trainData, testData = divideTrainTest(dataset)
 
-    flag = True
+    flag = False
     trainX, trainY = createSamples(trainData, lookBack, RNN=flag)
     testX, testY = createSamples(testData, lookBack, RNN=flag)
     print("testX shape:", testX.shape)
@@ -22,12 +39,10 @@ def test(data, lookBack, epoch, lr, batchSize, method, modelPath):
     print("trainX shape:", trainX.shape)
     print("trainy shape:", trainY.shape)
 
+    model = trainSVM(trainX, trainY)
 
-    train(trainX, trainY,  epoch=epoch, lr=lr, batchSize=batchSize, modelPath=modelPath,
-          lookBack=lookBack, method=method)
-
-    testPred = predict(testX, MODEL_PATH)
-    trainPred = predict(trainX, MODEL_PATH)
+    testPred = predictSVM(testX, model)
+    trainPred = predictSVM(trainX, model)
     print("testPred shape:", testPred.shape)
     print("trainPred shape:", trainPred.shape)
 
@@ -46,7 +61,7 @@ def test(data, lookBack, epoch, lr, batchSize, method, modelPath):
     return trainPred, testPred, MAE, MRSE, SMAPE
 
 
-def FCD_Train(ts, dataset, freq, lookBack, batchSize, epoch, lr, method):
+def FCD_Train_SVM(ts, dataset, freq, lookBack):
 
 
     # 序列分解
@@ -59,16 +74,8 @@ def FCD_Train(ts, dataset, freq, lookBack, batchSize, epoch, lr, method):
 
     # 分别预测
 
-    MODEL_PATH = "../model/ResRNN_model.pkl"
-    # trainPred, testPred, MAE, MRSE, SMAPE = test(data=dataset, lookBack=lag, epoch=epoch,
-    #                                              batchSize=batchSize, method=method, modelPath=MODEL_PATH)
-    trTrain, trTest, MAE1, MRSE1, SMAPE1 = test(trend, lookBack, epoch, lr, batchSize,  method=method, modelPath=MODEL_PATH)
-    resTrain, resTest, MAE2, MRSE2, SMAPE2 = test(residual, lookBack, epoch, lr, batchSize, method=method, modelPath=MODEL_PATH)
-    # trTrain, trTest, MAE1, MRSE1, SMAPE1= RNNFORECAST.RNNforecasting(trend, lookBack=resWin, epoch=30, unit=unit,
-    #                                                                     varFlag=True, minLen=20, maxLen=lag, step=4,
-    #                                                                     hiddenNum=100)
-    # resTrain, resTest, MAE2, MRSE2, SMAPE2 = RNNFORECAST.RNNforecasting(residual, lookBack=resWin, epoch=30, unit=unit,
-    #                                                                     varFlag=True, minLen=20, maxLen=lag, step=4, hiddenNum=100)
+    trTrain, trTest, MAE1, MRSE1, SMAPE1 = testSVM(trend, lookBack)
+    resTrain, resTest, MAE2, MRSE2, SMAPE2 = testSVM(residual, lookBack)
 
     trTrain = trTrain.reshape(-1)
     trTest = trTest.reshape(-1)
@@ -78,7 +85,6 @@ def FCD_Train(ts, dataset, freq, lookBack, batchSize, epoch, lr, method):
     print("trTrain shape is", trTrain.shape)
     print("resTrain shape is", resTrain.shape)
 
-    # '''
     # 数据对齐
     trendPred, resPred = align(trTrain, trTest, lookBack, resTrain, resTest, lookBack)
 
@@ -122,35 +128,21 @@ def FCD_Train(ts, dataset, freq, lookBack, batchSize, epoch, lr, method):
     # '''
     return trainPred, testPred, MAE, MRSE, SMAPE
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
 
     lookBack = 24
-    batchSize = 30
-    epoch = 2
-    MODEL_PATH = "../model/ResRNN_model.pkl"
-    METHOD = "ResRNN"
-    freq = 48
-    lr = 1e-4
+    freq = 8
 
     print("looback:", lookBack)
-    print("batchSize", batchSize)
-    print("epoch:", epoch)
-    print("METHOD:", METHOD)
     print("freq:", freq)
-    print("MODEL_PATH:", MODEL_PATH)
-    print("lr:", lr)
 
-    ts, data = load_data("../data/NSW2013.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
-    #ts, data = load_data("../data/bike_hour.csv", indexName="dteday", columnName="cnt")
-    #ts, data = load_data("../data/traffic_data_in_bits.csv", indexName="datetime", columnName="value")
+    #ts, data = load_data("../data/NSW2013.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
+    # ts, data = load_data("../data/bike_hour.csv", indexName="dteday", columnName="cnt")
+    ts, data = load_data("../data/traffic_data_in_bits.csv", indexName="datetime", columnName="value")
     #ts, data = load_data("../data/TAS2016.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
     # ts, data = util.load_data("../data/AEMO/TT30GEN.csv", indexName="TRADING_INTERVAL", columnName="VALUE")
 
-    trainPred, testPred, MAE, MRSE, SMAPE = test(data=data, lookBack=lookBack, epoch=epoch,  lr=lr,
-                                                batchSize=batchSize, method=METHOD, modelPath=MODEL_PATH)
+    trainPred, testPred, MAE, MRSE, SMAPE = testSVM(data, lookBack)
 
-    # trainPred, testPred, MAE, MRSE, SMAPE = FCD_Train(ts=ts, dataset=data, freq=freq, lookBack=lookBack,
-    #                                                   batchSize=batchSize,
-    #                                                   epoch=epoch, lr=lr, method=METHOD)
-
-    #test(data, lookBack, epoch, 1e-4, batchSize,  method=METHOD, modelPath=MODEL_PATH)
+    trainPred, testPred, MAE, MRSE, SMAPE = FCD_Train_SVM(ts, data, freq, lookBack)
