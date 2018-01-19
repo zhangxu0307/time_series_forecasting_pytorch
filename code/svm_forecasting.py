@@ -137,12 +137,12 @@ if __name__ == '__main__':
     print("looback:", lookBack)
     print("freq:", freq)
 
-    #ts, data = load_data("../data/NSW2013.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
+    ts, data = load_data("../data/NSW2013.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
     # ts, data = load_data("../data/bike_hour.csv", indexName="dteday", columnName="cnt")
-    ts, data = load_data("../data/traffic_data_in_bits.csv", indexName="datetime", columnName="value")
+    #ts, data = load_data("../data/traffic_data_in_bits.csv", indexName="datetime", columnName="value")
     #ts, data = load_data("../data/TAS2016.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
     # ts, data = util.load_data("../data/AEMO/TT30GEN.csv", indexName="TRADING_INTERVAL", columnName="VALUE")
 
     trainPred, testPred, MAE, MRSE, SMAPE = testSVM(data, lookBack)
 
-    trainPred, testPred, MAE, MRSE, SMAPE = FCD_Train_SVM(ts, data, freq, lookBack)
+    #trainPred, testPred, MAE, MRSE, SMAPE = FCD_Train_SVM(ts, data, freq, lookBack)
