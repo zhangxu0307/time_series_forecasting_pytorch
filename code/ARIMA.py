@@ -13,10 +13,9 @@ if __name__ == '__main__':
 
     #ts, data = load_data("../data/NSW2013.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
     # ts, data = load_data("../data/bike_hour.csv", indexName="dteday", columnName="cnt")
-    #ts, data = load_data("../data/traffic_data_in_bits.csv", indexName="datetime", columnName="value")
-    ts, data = load_data("../data/TAS2016.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
-    # ts, data = util.load_data("../data/AEMO/TT30GEN.csv", indexName="TRADING_INTERVAL", columnName="VALUE")
-    print("../data/TAS2016.csv")
+    ts, data = load_data("../data/traffic_data_in_bits.csv", indexName="datetime", columnName="value")
+    #ts, data = load_data("../data/TAS2016.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
+    #ts, data = util.load_data("../data/AEMO/TT30GEN.csv", indexName="TRADING_INTERVAL", columnName="VALUE")
 
     dataset = ts.values[:]
     X = np.array(dataset,dtype="float64")
