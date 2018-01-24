@@ -9,12 +9,13 @@ from code.util import *
 ts, data = load_data("../data/TAS2016.csv", indexName="SETTLEMENTDATE", columnName="TOTALDEMAND")
 #ts, data = util.load_data("../data/AEMO/TT30GEN.csv", indexName="TRADING_INTERVAL", columnName="VALUE")
 
-dta=pd.Series(data[200:500])
-fig = plt.figure(figsize=(12, 8))
-ax1= fig.add_subplot(121)
-ax2 = fig.add_subplot(122)
-diff1 = dta.diff(1)
-dta.plot(ax=ax1)
-diff1.plot(ax=ax2)
 
-plt.show()
+data = data[300:500]
+plt.plot(data)
+plt.savefig("../data/original.eps", format="eps")
+
+diffData = np.diff(data)
+plt.plot(diffData)
+plt.savefig("../data/diff_data.eps", format="eps")
+
+
