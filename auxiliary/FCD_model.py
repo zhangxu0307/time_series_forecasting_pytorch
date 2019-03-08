@@ -1,4 +1,4 @@
-from code.season_decompose import seasonDecompose
+from code.ts_decompose import seasonDecompose
 from code.train import train, predict
 from code.util import load_data, load_data_txt, load_data_xls, createSamples, divideTrainTest, align
 from sklearn.preprocessing import MinMaxScaler
@@ -21,7 +21,7 @@ def FCD_Train(ts, dataset, freq, lag, batchSize, epoch, method):
     # # 分别预测
     # t1 = time.time()
 
-    MODEL_PATH = "../model/ResRNN_model.pkl"
+    MODEL_PATH = "../models/ResRNN_model.pkl"
     trainPred, testPred, MAE, MRSE, SMAPE = test(data=dataset, lookBack=lag, epoch=epoch,
                                                  batchSize=batchSize, method=method, modelPath=MODEL_PATH)
     #trTrain, trTest, MAE1, MRSE1, SMAPE1 = test(dataset, lookBack, epoch, batchSize, method="RNN", modelPath=MODEL_PATH)
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     lookBack = 24
     batchSize = 30
     epoch = 20
-    MODEL_PATH = "../model/RNN_model.pkl"
+    MODEL_PATH = "../models/RNN_model.pkl"
     METHOD = "RNN"
     freq = 4
 

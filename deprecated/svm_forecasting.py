@@ -1,7 +1,7 @@
 from sklearn.svm import SVR
 from code import eval
 from code.util import *
-from code.season_decompose import *
+from code.ts_decompose import *
 from sklearn.preprocessing import MinMaxScaler
 
 

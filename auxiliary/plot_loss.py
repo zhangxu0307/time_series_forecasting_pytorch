@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 
 from matplotlib.pyplot import plot, savefig
 
-pkl_file1 = open('../model/loss_RNN.pkl', 'rb')
-pkl_file2 = open('../model/loss_GRU.pkl', 'rb')
-pkl_file3 = open('../model/loss_LSTM.pkl', 'rb')
-pkl_file4 = open('../model/loss_ResRNN-2.pkl', 'rb')
-pkl_file5 = open('../model/loss_ResRNN-4.pkl', 'rb')
-pkl_file6 = open('../model/loss_ResRNN-0.pkl', 'rb')
+pkl_file1 = open('../models/loss_RNN.pkl', 'rb')
+pkl_file2 = open('../models/loss_GRU.pkl', 'rb')
+pkl_file3 = open('../models/loss_LSTM.pkl', 'rb')
+pkl_file4 = open('../models/loss_ResRNN-2.pkl', 'rb')
+pkl_file5 = open('../models/loss_ResRNN-4.pkl', 'rb')
+pkl_file6 = open('../models/loss_ResRNN-0.pkl', 'rb')
 
 
 RNN = p.load(pkl_file1)
@@ -31,5 +31,5 @@ plt.plot(RES2, label="TSR-RNN-2", marker='x')
 plt.plot(RES4, label="TSR-RNN-4", marker='*')
 #plt.plot(RES0, label="RES0")
 plt.legend()
-savefig('../model/MyFig2.eps')
+savefig('../models/MyFig2.eps')
 #plt.show()

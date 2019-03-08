@@ -10,7 +10,7 @@ from code.train import train, predict
 from code.util import load_data, load_data_txt, load_data_xls, createSamples, divideTrainTest, align
 from sklearn.preprocessing import MinMaxScaler
 from code import eval
-from code.season_decompose import seasonDecompose
+from code.ts_decompose import seasonDecompose
 import pandas as pd
 
 def decomopsitionNet(data, lookBack, batchSize):
