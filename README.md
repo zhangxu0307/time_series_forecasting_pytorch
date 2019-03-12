@@ -11,16 +11,16 @@ Requirements
 - sklearn 0.19.1
 - numpy 1.15.4
 - pandas 0.23.4
-- statsmodels 0.8.0
+- statsmodels 0.9.0
 - matplotlib 2.1.0
 
 ## Code
 - ARIMA.py: ARIMA model, iteration version
+- Holt\_Winters.py Holt-Winters model, only primary version
 - eval.py: evaluation metrics, including RMSE,MAE,MAPE and SMAPE.
-- main.py: run one-step-ahead forecasting
-- main\_multi_ahead.py:run multi-step-ahead forecasting
+- NN\_forecasting.py:neural networks forecasting
 - model.py: neural network models
-- train.py: training of neural network models
+- train.py: training and predicting of neural network models, including RNN, LSTM, GRU, MLP, TSR-RNN 
 - ts_decompose.py: time series decomposition
 - ts_loader: data loader for neural network models
 - ML_forecasting.py: general machine learning models, including SVR and RF

@@ -1,3 +1,6 @@
+'''
+Neural Networks models training and predicting
+'''
 import pickle as p
 import time
 from src.model import *
@@ -6,13 +9,14 @@ from src.ts_loader import Time_Series_Data
 import numpy as np
 
 
-def train(trainX, trainY,  lookBack, lr, modelPath, method, use_cuda=False,
-          hidden_num=64, epoch=20, batchSize=32, checkPoint=10):
+def train(trainX, trainY,  lag, lr, method, hidden_num=64, epoch=20, batchSize=32,
+           checkPoint=10, use_cuda=False):
 
-    lossFilePath = "../models/loss_ResRNN-4.pkl"
+    lossFilePath = "../models/loss.pkl"
     output = open(lossFilePath, 'wb')
     lossList = []
 
+    # build up data loader
     dataset = Time_Series_Data(trainX, trainY)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batchSize, shuffle=True, sampler=None,
                                              batch_sampler=None, num_workers=1)
@@ -24,12 +28,12 @@ def train(trainX, trainY,  lookBack, lr, modelPath, method, use_cuda=False,
     if method == "GRU":
         net = GRUModel(inputDim=1, hiddenNum=hidden_num, outputDim=1, layerNum=1, cell="GRU", use_cuda=use_cuda)
     if method == "ResRNN":
-        net = ResRNNModel(inputDim=1, hiddenNum=hidden_num, outputDim=1, resDepth=1, use_cuda=use_cuda)
-    if method == "attention":
-        net = RNN_Attention(inputDim=1, hiddenNum=hidden_num, outputDim=1, resDepth=4,
-                            seq_len=lookBack, merge="concate", use_cuda=use_cuda)
+        net = ResRNNModel(inputDim=1, hiddenNum=hidden_num, outputDim=1, resDepth=4, use_cuda=use_cuda)
+    # if method == "attention":
+    #     net = RNN_Attention(inputDim=1, hiddenNum=hidden_num, outputDim=1, resDepth=4,
+    #                         seq_len=lag, merge="concate", use_cuda=use_cuda)
     if method == "MLP":
-        net = MLPModel(inputDim=lookBack, hiddenNum=hidden_num, outputDim=1)
+        net = MLPModel(inputDim=lag, hiddenNum=hidden_num, outputDim=1)
     if use_cuda:
         net = net.cuda()
     net = net.train()
@@ -64,18 +68,16 @@ def train(trainX, trainY,  lookBack, lr, modelPath, method, use_cuda=False,
             loss.backward()
             optimizer.step()
 
-        print("%d epoch is finished!" % i)
+        print("%d epoch is finished!" % (i+1))
 
     t2 = time.time()
     print("train time:", t2-t1)
     p.dump(lossList, output, -1)
 
-    torch.save(net, modelPath)
-
     return net
 
 
-def predict(testX, net, use_cuda=False):
+def predict(net, testX, use_cuda=False):
 
     if use_cuda:
         net = net.cuda()
@@ -116,7 +118,6 @@ def predict_iteration(net, testX, lookAhead, RNN=True, use_cuda=True):
         else:
             pred = pred.reshape((testBatchSize, 1))
             testX = np.append(testX, pred, axis=1)  # add the prediction to the tail
-
 
     ans = np.array(ans)
     ans = ans.transpose([1, 0])

@@ -12,7 +12,7 @@ def ts_decompose(ts, freq):
     residual = pd.DataFrame(decomposition.resid).dropna().values
     trend = trend.astype('float32').reshape(-1, 1)
     seasonal = seasonal[freq//2:-(freq//2)].astype('float32').reshape(-1, 1)
-    # 为了三个数据尺度统一，舍弃seanson的前后2个数值
+    # for unify the scale, drop the head and tail of season series
     residual = residual.astype('float32').reshape(-1, 1)
 
     return trend, seasonal, residual

@@ -10,10 +10,10 @@ if __name__ == '__main__':
     q = 4
 
     # ts, data = util.load_data("../data/NSW2013.csv", columnName="TOTALDEMAND")
-    ts, data = util.load_data("../data/bike_hour.csv", columnName="cnt")
+    # ts, data = util.load_data("../data/bike_hour.csv", columnName="cnt")
     # ts, data = util.load_data("../data/TAS2016.csv", columnName="TOTALDEMAND")
     # ts, data = util.load_data("../data/traffic_data_in_bits.csv", columnName="value")
-    # ts, data = util.load_data("../data/beijing_pm25.csv", columnName="pm2.5")
+    ts, data = util.load_data("../data/beijing_pm25.csv", columnName="pm2.5")
     # ts, data = util.load_data("../data/pollution.csv", columnName="Ozone")
 
     train, test = util.divideTrainTest(data)
@@ -38,15 +38,15 @@ if __name__ == '__main__':
         realTestY.append(obs)
         print('t:%d, predicted=%f, expected=%f' % (t,  yhat, obs))
 
-    realTestY = np.array(test)
-    predictions = np.array(predictions).reshape(-1)
+    realTestY = np.array(test).reshape(-1, 1)
+    predictions = np.array(predictions).reshape(-1, 1)
     print("pred:", predictions)
     MAE = eval.calcMAE(realTestY, predictions)
     RMSE = eval.calcRMSE(realTestY, predictions)
     MAPE = eval.calcSMAPE(realTestY, predictions)
     print('Test MAE: %.8f' % MAE)
     print('Test RMSE: %.8f' % RMSE)
-    print('Test MAPE: %.8f' % MAPE)
+    print('Test SMAPE: %.8f' % MAPE)
 
     # plot
     # pyplot.plot(test)

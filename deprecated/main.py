@@ -1,4 +1,4 @@
-from src.train import train, predict
+from src.NN_train import train, predict
 from src.util import *
 from sklearn.preprocessing import MinMaxScaler
 from src import eval

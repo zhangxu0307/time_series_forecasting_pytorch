@@ -1,3 +1,6 @@
+'''
+time series data loader for neural network models
+'''
 from torch.utils.data import Dataset
 from src.util import *
 import torch
