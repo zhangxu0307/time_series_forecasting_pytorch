@@ -10,17 +10,18 @@ from src import eval
 # ts, data = util.load_data("../data/bike_hour.csv", columnName="cnt")
 # ts, data = util.load_data("../data/TAS2016.csv", columnName="TOTALDEMAND")
 # ts, data = util.load_data("../data/traffic_data_in_bits.csv", columnName="value")
-ts, data = util.load_data("../data/beijing_pm25.csv", columnName="pm2.5")
-# ts, data = util.load_data("../data/pollution.csv", columnName="Ozone")
+# ts, data = util.load_data("../data/beijing_pm25.csv", columnName="pm2.5")
+ts, data = util.load_data("../data/pollution.csv", columnName="Ozone")
 
 train, test = util.divideTrainTest(data)
 print("train shape is", train.shape)
 print("test shape is", test.shape)
 
 flag = False
-lookBack = 48
-trainX, trainY = util.createSamples(train, lookBack, RNN=flag)
-testX, testY = util.createSamples(test, lookBack, RNN=flag)
+lag = 48
+h_test = 6
+trainX, trainY = util.create_multi_ahead_samples(train, lag, h_test, RNN=flag)
+testX, testY = util.create_multi_ahead_samples(test, lag, h_test, RNN=flag)
 print("testX shape:", testX.shape)
 print("testy shape:", testY.shape)
 print("trainX shape:", trainX.shape)
@@ -32,7 +33,7 @@ for i in range(len(testX)):
     data = testX[i, :].transpose().flatten()
     model = ExponentialSmoothing(data, trend='add', seasonal='add', seasonal_periods=12)
     model = model.fit(smoothing_level=None)
-    pred = model.predict(start=0, end=0)
+    pred = model.predict(start=0, end=0 + h_test - 1)
     real_y = testY[i].tolist()
     groud_truth.extend(pred)
     prediction.extend(real_y)
